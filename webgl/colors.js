@@ -1,0 +1,1 @@
+export const grassColor = 0x9A9865
