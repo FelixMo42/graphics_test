@@ -18,11 +18,13 @@ export const createShader = (gl, shaderSource, shaderType) => {
    
     // check if it compiled
     if ( !gl.getShaderParameter(shader, gl.COMPILE_STATUS) ) {
-        // Something went wrong during compilation get the error
-        throw "could not compile shader:" + gl.getShaderInfoLog(shader) + "\n" + shaderSource
+        let info = gl.getShaderInfoLog(shader)
 
         // remove the shader from the context
         gl.deleteShader(shader)
+
+        // Something went wrong during compilation get the error
+        throw "could not compile shader:" + info + "\n" + shaderSource
     }
    
     return shader
