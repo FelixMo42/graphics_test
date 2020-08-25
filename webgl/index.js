@@ -11,6 +11,9 @@ import {
 
 let sprites = 0
 
+let x = 0
+let y = 0
+
 function drawQuad(gl, vao, x, y, w, h) {
     let offset = sprites * 8
 
@@ -51,23 +54,23 @@ async function main() {
     drawQuad(gl, vao,  0,  0, 100, 100)
     // drawQuad(gl, vao, 0.5, 0.5, 0.5, 0.5)
 
-    let cameraPositionLocation = gl.getAttribLocation(program, "u_cameraPosition")
-    let screenResolutionLocation = gl.getAttribLocation(program, "u_screenResolution")
+    let cameraPositionLocation   = gl.getUniformLocation(program, "cameraPosition")
+    let screenResolutionLocation = gl.getUniformLocation(program, "screenResolution")
 
-    console.log(cameraPositionLocation, screenResolutionLocation)
+    // use the shaders we want
+    gl.useProgram(program)
 
     loop(() => {
         // tell WebGL how to convert from clip space to pixels
         resizeCanvas(gl.canvas)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-        // gl.uniform2f(screenResolutionLocation, gl.canvas.width, gl.canvas.height)
+        gl.uniform2f(screenResolutionLocation, gl.canvas.width / 2, gl.canvas.height / 2)
+
+        gl.uniform2f(cameraPositionLocation, x, y)
 
         // clear the canvas
         gl.clearColor(0, 0.5, 0, 1)
         gl.clear(gl.COLOR_BUFFER_BIT)
-
-        // use the shaders we want
-        gl.useProgram(program)
 
         // bind the attribute/buffer set we want
         gl.bindVertexArray(vao.vao)
@@ -78,3 +81,8 @@ async function main() {
 }
 
 main()
+
+document.onmousemove = event => {
+    x = event.pageX - window.innerWidth / 2
+    y = -(event.pageY - window.innerHeight / 2)
+}
