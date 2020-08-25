@@ -83,32 +83,18 @@ export const loop = (body) => {
     requestAnimationFrame(loop)
 }
 
-export const createVertexArray = (gl, program, name) => {
-    const spriteCount = 1
-
+export const createVertexArray = (gl, program, name, spriteCount) => {
     // get the location of the vertex attrabure in the programe
     let attributeLocation = gl.getAttribLocation(program, name)
 
     // create a buffer
     let buffer = gl.createBuffer()
 
-    // make sure were using the buffer
+    // make sure were using the buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
 
-    
+    // create a buffer to store the attribure values
     let data = new Float32Array(spriteCount * 4 * 2)
-
-    data[0] = 0
-    data[1] = 0
-
-    data[2] = 0
-    data[3] = 0.5
-
-    data[4] = 0.5
-    data[5] = 0
-
-    data[6] = 0.5
-    data[7] = 0.5
     
     // set the data in the buffer
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
@@ -129,23 +115,29 @@ export const createVertexArray = (gl, program, name) => {
     let offset = 0        // start at the beginning of the buffer
     gl.vertexAttribPointer(attributeLocation, size, type, normalize, stride, offset)
 
-    return vao
+    return { vao , data }
 }
 
-export function createQuadIndexArray(gl) {
+export function createQuadIndexArray(gl, sprites) {
+    let numIndexs = sprites * 6
+
     // create the index buffer
     const indexBuffer = gl.createBuffer()
     
     // make this buffer the current 'ELEMENT_ARRAY_BUFFER'
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+
+    let indexs = new Uint16Array(numIndexs)
+
+    for (let i = 0, c = 0; c < numIndexs; c += 6, i += 4) {
+        indexs[c + 0] = i + 0
+        indexs[c + 1] = i + 1
+        indexs[c + 2] = i + 2
+        indexs[c + 3] = i + 2
+        indexs[c + 4] = i + 1
+        indexs[c + 5] = i + 3
+    }
         
     // fill the current element array buffer with data
-    gl.bufferData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        new Uint16Array([
-            0, 1, 2,   // first triangle
-            2, 1, 3,   // second triangle
-        ]),
-        gl.STATIC_DRAW
-    )
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexs, gl.STATIC_DRAW)
 }
